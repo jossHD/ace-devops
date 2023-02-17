@@ -120,4 +120,22 @@ steps:
   inputs:
     script: 'git clone $(params.git-url)'
 
+-task: 
+  - name: bar-file
+    taskRef:
+      - name: ace-create-bar-file
+    parameters:
+      - name: ace-project-name
+        value: "$(params.ace-project-name)"
+      - name: java-project-name
+        value: "$(params.java-project-name)"
+    runAfter:
+        # need the git repository to be able to
+        #  compile the project into a bar file
+      - clone-source
+    workspace:
+      - name: output
+        workspace: pipeline-shared-workspace
+
+
 
