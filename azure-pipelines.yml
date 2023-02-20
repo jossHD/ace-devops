@@ -15,7 +15,7 @@ trigger:
 - main
 
 pool: 
-  name: Default
+  name: PoC IBK
 
 parameters:
 - name: appOptions
@@ -38,8 +38,6 @@ variables:
 stages:
 - stage: CreateApplication
   displayName: Create Application
-  pool: 
-    name: PoC IBK
   jobs: 
   - deployment: CreateApplicationACE
     workspace:
@@ -51,9 +49,12 @@ stages:
         deploy:
           steps:
           - template: templates/creatingapplication.yml
+
 - stage: DeployApplication
   displayName: Deploy Application
   dependsOn: CreateApplication
+  pool: 
+    name: Default
   jobs:
   - deployment: DeployArgo
     workspace:
@@ -71,7 +72,32 @@ stages:
         deploy:
           steps:
           - template: ibm-gitops-deploy.yml@templates
-- stage: UploadOpenAPI
-  displayName: UploadOpenAPI
+- stage: PublishApplication
+  displayName: Publish Application in APIC
   dependsOn: DeployApplication
-  jobs:
+  jobs: 
+  - deployment: PublishAPIC
+    workspace:
+      clean: all
+    displayName: Publishing in APIC
+    environment: $(environmentValue)
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - template: templates/publish-api.yml
+
+- stage: TestingApplication
+  displayName: Testing Application in APIC
+  dependsOn: PublishApplication
+  jobs: 
+  - deployment: APICTest
+    workspace:
+      clean: all
+    displayName: APIC Testing
+    environment: $(environmentValue)
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - template: templates/testing-api.yml
