@@ -1,141 +1,77 @@
+resources:
+  repositories:
+    - repository: templates
+      endpoint: github-jossHD
+      type: github
+      name: jossHD/templates
+      trigger: none
+    - repository: policy-policyname
+      endpoint: github-jossHD
+      type: github
+      name: jossHD/policy-policyname
+      trigger: none
+
 trigger:
 - main
 
-pool:
-  name: PoC IBK
+pool: 
+  name: Default
 
 parameters:
+- name: appOptions
+  displayName: Application options
+  type: object
+  default:
+    - name: 'api-apiname'
+      secret: []
+    - name: 'lib-libname'
+      secret: []
+- name: appPolicies
+  displayName: Application Policies options
+  type: object
+  default:
+    - policy-policyname
 
-  - name: integration-server-name
-    displayName: Name of the IntegrationServer to create
+variables: 
+  - template: variables.yml
 
-  - name: ace-namespace
-    type: string
-    displayName: Namespace to deploy the App Connect Enterprise resources to.
-
-  - name: git-repository
-    type: string
-    displayName: URL for the git repository containing the App Connect project to
-        deploy.
-
-  - name: git-url
-    type: string
-    displayName: URL GITHUB DONDE ESTAN LOS YAML PARA EL DESPLIEGUE
-    default: "https://github.com/selenia-viviana/app-connect-tekton-pipeline.git"    
-      
-  - name: ace-project-name
-    displayName: Name of the App Connect project to deploy.
-  - name: test-project-name
-    default: ""
-    displayName: Name of an App Connect test project to run to verify the bar file that is built with the ace-project-name project.
-
-  - name: credentials-to-update
-    type: object
-    default:
-      - ""
-
-
-  # Java project
-  - name: java-project-name
-    default: ""
-    displayName: Name of Java project containing implementations of Java Compute nodes.
-  # setdbparms.txt file
-  - name: setdbparms-file
-    default: ""
-    displayName: Location of a setdbparms.txt file to include in the project.
-     
-  - name: setdbparms-name
-    default: ""
-    displayName: Name to give to the setdbparms.txt file when deployed to OpenShift.
-
-  # server.conf.yaml
-  - name: serverconf-file
-    default: ""
-    displayName: Location of a server.conf.yaml file to include in the project.
-        
-  - name: serverconf-name
-    default: ""
-    displayName: Name to give to the server.conf.yaml file when deployed to OpenShift.
-      
-  # Policy project
-  - name: policies-project-folder
-    default: ""
-    displayName: Location of a project containing App Connect policies.
-        
-  - name: policies-project-name
-    default: ""
-    displayName: Name to give to the policy project when deployed to OpenShift.
-        
-  # Loopback data sources
-  - name: datasources-project-folder
-    default: ""
-    displayName: Location of a project containing Loopback data sources.
-        
-  - name: datasources-project-name
-    default: ""
-    displayName: Name to give to the data sources project when deployed to OpenShift.
-       
-    # truststore file
-  - name: truststore-p12-secret
-    default: ""
-    displayName: Name of a secret containing a pkcs12 file to use as the basis for a truststore for App Connect.
-
-  - name: truststore-p12-secret-namespace
-    default: ""
-    displayName: Namespace for a secret containing a pkcs12 file to use as the basis for a truststore for App Connect.
-        Leave as an empty string if no truststore is needed.
-  - name: truststore-p12-secret-key
-    default: "ca.p12"
-    displayName: Key of the secret containing the pkcs12 file.
-  - name: truststore-p12-secret-password
-    default: "ca.password"
-    displayName: Key of the secret containing the pkcs12 password.
-  - name: truststore-name
-    default: ""
-    displayName: 
-        Name to give to the truststore created when deployed to OpenShift.
-        Leave as an empty string if no truststore is needed.
-    # ########################################################
-    # App Connect options
-    #
-    #  For details of other values that can be used for these
-    #   parameters, check https://www.ibm.com/docs/en/app-connect/containers_cd?topic=obtaining-app-connect-enterprise-server-image-from-cloud-container-registry
-    #
-    # ########################################################
-
-  - name: app-connect-enterprise-version
-    default: "12.0.5.0-r4"
-  - name: app-connect-enterprise-license
-    default: "L-KSBM-CJ2KWU"
-  - name: app-connect-enterprise-base-image
-    default: "cp.icr.io/cp/appc/ace-server-prod@sha256:473bbea96e65025c11c91014ac8dd72641212bd2f5f35d661dca7b3242f4155c"
-
-    # ########################################################
-
-steps:
-
-
-- task: CmdLine@2
-  displayName: clone-source
-  inputs:
-    script: 'git clone $(params.git-url)'
-
--task: 
-  - name: bar-file
-    taskRef:
-      - name: ace-create-bar-file
-    parameters:
-      - name: ace-project-name
-        value: "$(params.ace-project-name)"
-      - name: java-project-name
-        value: "$(params.java-project-name)"
-    runAfter:
-        # need the git repository to be able to
-        #  compile the project into a bar file
-      - clone-source
+stages:
+- stage: CreateApplication
+  displayName: Create Application
+  pool: 
+    name: PoC IBK
+  jobs: 
+  - deployment: CreateApplicationACE
     workspace:
-      - name: output
-        workspace: pipeline-shared-workspace
-
-
-
+      clean: all
+    displayName: Create Application in ACE
+    environment: $(environmentValue)
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - template: templates/creatingapplication.yml
+- stage: DeployApplication
+  displayName: Deploy Application
+  dependsOn: CreateApplication
+  jobs:
+  - deployment: DeployArgo
+    workspace:
+      clean: all
+    displayName: Deploy in ArgoCD
+    environment: $(environmentValue)
+    strategy:
+      runOnce:
+        preDeploy:
+          steps:
+          - template: ibm-gitops-pre-deploy.yml@templates
+            parameters:
+              appOptions: ${{ parameters.appOptions }}
+              appPolicies: ${{ parameters.appPolicies }}
+        deploy:
+          steps:
+          - template: ibm-gitops-deploy.yml@templates
+- stage: UploadOpenAPI
+  displayName: UploadOpenAPI
+  dependsOn: DeployApplication
+  jobs:
