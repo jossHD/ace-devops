@@ -91,11 +91,23 @@ stages:
   displayName: Testing Application in APIC
   dependsOn: PublishApplication
   jobs: 
-  - deployment: APICTest
+  - job: GetCredentials
+    steps:
+    - bash: |
+        echo "##vso[task.setvariable variable=xAPIKey;isOutput=true]$(xapikey)"
+        echo "##vso[task.setvariable variable=xAPISecret;isOutput=true]$(xapisecret)"
+      name: credentials
+  - deployment: ResquestTestingAPI
+    dependsOn: GetCredentials
     workspace:
       clean: all
     displayName: APIC Testing
     environment: $(environmentValue)
+    timeoutInMinutes: 1
+    cancelTimeoutInMinutes: 1
+    variables:
+      xapikey: $[dependencies.GetCredentials.outputs['credentials.xAPIKey']]
+      xapisecret: $[dependencies.GetCredentials.outputs['credentials.xAPISecret']]
     strategy:
       runOnce:
         deploy:

@@ -1,4 +1,26 @@
 steps:
+
+# Download Open API
+
+# Upload Open API
+
+- task: CmdLine@2
+  displayName: 'Setting git config'
+  inputs:
+    script: |
+      git config --global user.email "hinostrozajosselyn@gmail.com"
+      git config --global user.name "jossHD"
+
+- task: CmdLine@2
+  displayName: 'Pushing the changes in GitHub'
+  inputs:
+    script: |
+      git add .
+      git commit -m "Adding API"
+      git push origin HEAD:main
+
+# Pubishing API
+
 - task: CmdLine@2
   displayName: 'Login APIC'
   inputs:
