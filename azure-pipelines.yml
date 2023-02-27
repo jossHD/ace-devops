@@ -6,10 +6,17 @@ pool:
   name: PoC IBK
 
 steps:
+  - task: CmdLine@2
+    displayName: "Creating bar file"
+    inputs:
+      script: |
+        CALL "C:\Program Files\IBM\ACE\12.0.6.0\ace.cmd" ibmint package --input-path $(system.defaultworkingdirectory)\ace-projects  --project simple-demo --output-bar-file $(system.defaultworkingdirectory)\templates\assests\java.bar'
+        
+        echo "BAR file created"
 
-- task: CmdLine@2
-  inputs:
-    script: |
-      cd C:\Users\001664815\IBM\ACET12\workspace\BARfiles
+  - task: CmdLine@2
+    inputs:
+      script: |
+        cd templates\assests
       
-      jf rt upload "java.bar" example-repo-local --server-id=josselynhd
+        jf rt upload "java.bar" example-repo-local --server-id=josselynhd
