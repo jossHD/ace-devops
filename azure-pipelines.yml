@@ -18,4 +18,4 @@ steps:
   - task: JfrogCli@1
     inputs:
       artifactoryService: 'jfrog-service'
-      command: 'jfrog rt upload "$(system.defaultworkingdirectory)\templates\assets\java.bar" example-repo-local --server-id=josselynhd'
+      command: 'jfrog rt upload "$(system.defaultworkingdirectory)\templates\assets\java.bar" example-repo-local'
