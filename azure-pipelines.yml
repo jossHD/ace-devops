@@ -9,4 +9,4 @@ steps:
 
 - task: CmdLine@2
   inputs:
-    script: 'jf rt upload "java.bar" example-repo-local --server-id=josselynhd'
+    script: 'jf rt upload "C:\Users\001664815\IBM\ACET12\workspace\BARfiles\java.bar" example-repo-local --server-id=josselynhd'
