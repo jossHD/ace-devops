@@ -28,4 +28,8 @@ steps:
 
         CALL "C:\Program Files\IBM\ACE\12.0.6.0\ace.cmd" mqsibar --working-directory $(system.defaultworkingdirectory)\ace-projects\TEST_SERVER --bar-file $(system.defaultworkingdirectory)\templates\assets\api_Test.bar
 
-
+  - task: CmdLine@2
+    displayName: "Running tests"
+    inputs:
+      script: |
+        CALL "C:\Program Files\IBM\ACE\12.0.6.0\ace.cmd" IntegrationServer --work-dir $(system.defaultworkingdirectory)\ace-projects\TEST_SERVER --test-project simple_api_Test --start-msgflows false
