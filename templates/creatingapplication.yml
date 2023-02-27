@@ -1,0 +1,11 @@
+steps:
+
+  - task: CmdLine@2
+    displayName: "Creating bar file"
+    inputs:
+      script: |
+        CALL "C:\Program Files\IBM\ACE\12.0.6.0\ace.cmd" ibmint package --input-path $(system.defaultworkingdirectory)\ace-projects  --project simple-demo --output-bar-file $(system.defaultworkingdirectory)\templates\assests\java.bar'
+        
+        echo "BAR file created"
+
+
