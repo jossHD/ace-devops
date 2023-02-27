@@ -10,7 +10,7 @@ steps:
     displayName: "Creating bar file"
     inputs:
       script: |
-        CALL "C:\Program Files\IBM\ACE\12.0.6.0\ace.cmd" ibmint package --input-path $(system.defaultworkingdirectory)\ace-projects  --project simple-demo --output-bar-file $(system.defaultworkingdirectory)\templates\assets\java.bar
+        CALL "C:\Program Files\IBM\ACE\12.0.6.0\ace.cmd" ibmint package --input-path $(system.defaultworkingdirectory)\ace-projects  --project simple_api --output-bar-file $(system.defaultworkingdirectory)\templates\assets\api.bar
         
         echo "BAR file created"
 
@@ -18,4 +18,4 @@ steps:
   - task: JfrogCli@1
     inputs:
       artifactoryService: 'jfrog-service'
-      command: 'jfrog rt upload "$(system.defaultworkingdirectory)\templates\assets\java.bar" example-repo-local'
+      command: 'jfrog rt upload "$(system.defaultworkingdirectory)\templates\assets\api.bar" example-repo-local'
