@@ -6,9 +6,8 @@ pool:
   name: PoC IBK
 
 steps:
-- task: CmdLine@2
-  displayName: 'Clone Repo'
+
+- task: JfrogCli@1
   inputs:
-    script: |
-     
-      CALL "C:\Program Files\IBM\ACE\12.0.6.0\ace.cmd" ibmint package --input-path $(system.defaultworkingdirectory)\ace-projects  --project simple-demo --output-bar-file C:\Users\001664815\IBM\ACET12\workspace\BARfiles\java.bar
+    artifactoryService: 'jfrog-service'
+    command: 'jf rt upload "C:\Users\001664815\IBM\ACET12\workspace\BARfiles\java.bar" example-repo-local --server-id=josselynhd'
