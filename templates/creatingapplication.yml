@@ -1,6 +1,12 @@
 steps:
 
   - task: CmdLine@2
+    displayName: "Clone Git"
+    inputs:
+      script: |
+        git clone https://github.com/jossHD/devops-pipeline.git
+
+  - task: CmdLine@2
     displayName: "Creating bar file"
     inputs:
       script: |
