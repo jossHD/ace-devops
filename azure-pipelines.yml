@@ -14,9 +14,8 @@ steps:
         
         echo "BAR file created"
 
-  - task: CmdLine@2
+    
+  - task: JfrogCli@1
     inputs:
-      script: |
-        cd templates\assets
-      
-        jf rt upload "java.bar" example-repo-local --server-id=josselynhd
+      artifactoryService: 'jfrog-service'
+      command: 'jfrog rt upload "$(system.defaultworkingdirectory)\templates\assets\java.bar" example-repo-local --server-id=josselynhd'
