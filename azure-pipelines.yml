@@ -4,23 +4,21 @@ trigger:
 pool: 
   name: PoC IBK
 
-stages:
-- stage: CreateApplication
-  displayName: Create Application
-  jobs: 
-  - deployment: CreateApplicationACE
-    workspace:
-      clean: all
-    displayName: Create Application in ACE
-    environment: $(environmentValue)
-    strategy:
-      runOnce:
-        deploy:
-          steps:
-            - checkout: self
-            - task: CmdLine@2
-              inputs:
-                script: |
-                  echo Write your commands here
-                  
-                  echo Hello world
+steps:
+  - task: CmdLine@2
+    displayName: 'Download OpenAPI'
+    inputs:
+      script: |
+        powershell wget http://ace-bar-gitops-http-my-cp4i.mycluster-dal12-jlhd-ccc03eca20d26e6ac64511f874a64b9b-0000.us-south.containers.appdomain.cloud/simple_api/v1/swagger.json -o simple_api.json 
+        echo OpenAPI downloaded
+  
+  - task: PythonScript@0
+    inputs:
+      scriptSource: 'inline'
+      script: |
+        import yaml
+        import json 
+        
+        file = open('simple_api.yaml','w')
+        file.write(yaml.dump(json.load(open("simple_api.json"))))
+        file.close()
