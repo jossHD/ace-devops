@@ -32,7 +32,7 @@ steps:
   displayName: 'Moving OpenAPI'
   inputs:
     script: |
-      move $(project-name).yaml $(system.defaultworkingdirectory)\templates\assets
+      move $(project-name).yaml $(system.defaultworkingdirectory)\templates
 # Pubishing API
 
 - task: CmdLine@2
@@ -49,7 +49,7 @@ steps:
 - task: CmdLine@2
   displayName: 'Creating new product'
   inputs:
-    script: 'apic create:product --title "$(product-name)" --version 1.0.0 --apis assets\$(project-name).yaml --filename templates\product-lab.yaml --gateway-type $(gw-type)'
+    script: 'apic create:product --title "$(product-name)" --version 1.0.0 --apis $(project-name).yaml --filename templates\product-lab.yaml --gateway-type $(gw-type)'
 
 - task: CmdLine@2
   displayName: 'Pubishing product'
