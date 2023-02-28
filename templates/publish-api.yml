@@ -15,16 +15,16 @@ steps:
       powershell wget http://$(is-name)-http-$(namespaceSecret).$(cluster-endpoint)/$(project-name)/v1/swagger.json -o $(project-name).json 
       echo OpenAPI downloaded
 
-  - task: PythonScript@0
-    inputs:
-      scriptSource: 'inline'
-      script: |
-        import yaml
-        import json 
-        
-        file = open('$(system.defaultworkingdirectory)templates\assets\$(project-name)','w')
-        file.write(yaml.dump(json.load(open("$(project-name).json"))))
-        file.close()
+- task: PythonScript@0
+  inputs:
+    scriptSource: 'inline'
+    script: |
+      import yaml
+      import json 
+       
+      file = open('$(system.defaultworkingdirectory)templates\assets\$(project-name)','w')
+      file.write(yaml.dump(json.load(open("$(project-name).json"))))
+      file.close()
 # Pubishing API
 
 - task: CmdLine@2
