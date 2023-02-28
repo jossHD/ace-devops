@@ -11,7 +11,7 @@ steps:
   displayName: 'Download OpenAPI'
   inputs:
     script: |
-      cd $(system.defaultworkingdirectory)templates\assets
+      cd $(system.defaultworkingdirectory)\templates\assets
       echo Moving to directory
       powershell wget http://$(is-name)-http-$(namespaceSecret).$(cluster-endpoint)/$(project-name)/v1/swagger.json -o $(project-name).json 
       echo OpenAPI downloaded
@@ -23,7 +23,7 @@ steps:
       import yaml
       import json 
        
-      file = open('$(system.defaultworkingdirectory)templates\assets\$(project-name)','w')
+      file = open('$(system.defaultworkingdirectory)\templates\assets\$(project-name)','w')
       file.write(yaml.dump(json.load(open("$(project-name).json"))))
       file.close()
 # Pubishing API
