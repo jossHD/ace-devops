@@ -1,13 +1,88 @@
-
+resources:
+  repositories:
+    - repository: templates
+      endpoint: github-jossHD
+      type: github
+      name: jossHD/templates
+      trigger: none
+    - repository: policy-policyname
+      endpoint: github-jossHD
+      type: github
+      name: jossHD/policy-policyname
+      trigger: none
 
 trigger:
 - main
 
 pool: 
   name: PoC IBK
-steps:
 
-  - task: PowerShell@2
-    inputs:
-      targetType: 'inline'
-      script: 'Start-Sleep -Seconds 30'
+parameters:
+- name: appOptions
+  displayName: Application options
+  type: object
+  default:
+    - name: 'api-apiname'
+      secret: []
+    - name: 'lib-libname'
+      secret: []
+- name: appPolicies
+  displayName: Application Policies options
+  type: object
+  default:
+    - policy-policyname
+
+variables: 
+  - template: variables.yml
+
+stages:
+- stage: CreateApplication
+  displayName: Create Application
+  jobs: 
+  - deployment: CreateApplicationACE
+    workspace:
+      clean: all
+    displayName: Create Application in ACE
+    environment: $(environmentValue)
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - template: templates/creatingapplication.yml
+
+- stage: DeployApplication
+  displayName: Deploy Application
+  dependsOn: CreateApplication
+  pool: 
+    name: Default
+  jobs:
+  - deployment: DeployArgo
+    workspace:
+      clean: all
+    displayName: Deploy in ArgoCD
+    environment: $(environmentValue)
+    strategy:
+      runOnce:
+        preDeploy:
+          steps:
+          - template: ibm-gitops-pre-deploy.yml@templates
+            parameters:
+              appOptions: ${{ parameters.appOptions }}
+              appPolicies: ${{ parameters.appPolicies }}
+        deploy:
+          steps:
+          - template: ibm-gitops-deploy.yml@templates
+- stage: PublishApplication
+  displayName: Publish Application in APIC
+  dependsOn: DeployApplication
+  jobs: 
+  - deployment: PublishAPIC
+    workspace:
+      clean: all
+    displayName: Publishing in APIC
+    environment: $(environmentValue)
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - template: templates/publish-api.yml
