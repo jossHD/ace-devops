@@ -1,23 +1,18 @@
 steps:
-
-  - task: CmdLine@2
-    displayName: "Clone Git"
-    inputs:
-      script: |
-        git clone https://github.com/jossHD/devops-pipeline.git
+  - checkout: self
 
   - task: CmdLine@2
     displayName: "Creating bar file"
     inputs:
       script: |
-        CALL "C:\Program Files\IBM\ACE\12.0.6.0\ace.cmd" ibmint package --input-path $(system.defaultworkingdirectory)\devops-pipeline\ace-projects  --project simple_api --output-bar-file $(system.defaultworkingdirectory)\devops-pipeline\templates\assets\api.bar
+        CALL "$(ace-directory)" ibmint package --input-path $(system.defaultworkingdirectory)\ace-projects  --project $(project-name) --output-bar-file $(system.defaultworkingdirectory)\templates\assets\$(project-name).bar
         
         echo "BAR file created"
   - task: CmdLine@2
     displayName: "Creating bar file with tests"
     inputs:
       script: |
-        CALL "C:\Program Files\IBM\ACE\12.0.6.0\ace.cmd" ibmint package --input-path $(system.defaultworkingdirectory)\devops-pipeline\ace-projects  --project simple_api_Test --output-bar-file $(system.defaultworkingdirectory)\devops-pipeline\templates\assets\api_Test.bar
+        CALL "$(ace-directory)" ibmint package --input-path $(system.defaultworkingdirectory)\ace-projects  --project $(project-name-test) --output-bar-file $(system.defaultworkingdirectory)\templates\assets\$(project-name-test).bar
         
         echo "BAR file with tests created"
 
@@ -25,19 +20,19 @@ steps:
     displayName: "Installing bars into test server"
     inputs:
       script: |
-        CALL "C:\Program Files\IBM\ACE\12.0.6.0\ace.cmd" mqsibar --working-directory $(system.defaultworkingdirectory)\devops-pipeline\ace-projects\TEST_SERVER --bar-file $(system.defaultworkingdirectory)\devops-pipeline\templates\assets\api.bar
+        CALL "$(ace-directory)" mqsibar --working-directory $(system.defaultworkingdirectory)\ace-projects\TEST_SERVER --bar-file $(system.defaultworkingdirectory)\templates\assets\$(project-name).bar
 
-        CALL "C:\Program Files\IBM\ACE\12.0.6.0\ace.cmd" mqsibar --working-directory $(system.defaultworkingdirectory)\devops-pipeline\ace-projects\TEST_SERVER --bar-file $(system.defaultworkingdirectory)\devops-pipeline\templates\assets\api_Test.bar
+        CALL "$(ace-directory)" mqsibar --working-directory $(system.defaultworkingdirectory)\ace-projects\TEST_SERVER --bar-file $(system.defaultworkingdirectory)\templates\assets\$(project-name-test).bar
 
   - task: CmdLine@2
     displayName: "Running tests"
     inputs:
       script: |
-        CALL "C:\Program Files\IBM\ACE\12.0.6.0\ace.cmd" IntegrationServer --work-dir $(system.defaultworkingdirectory)\devops-pipeline\ace-projects\TEST_SERVER --test-project simple_api_Test --start-msgflows false
+        CALL "$(ace-directory)" IntegrationServer --work-dir $(system.defaultworkingdirectory)\ace-projects\TEST_SERVER --test-project $(project-name-test) --start-msgflows false
 
   - task: JfrogCli@1
     displayName: "Upload bar in Artifactory"
     inputs:
       artifactoryService: 'jfrog-service'
-      command: 'jfrog rt upload "$(system.defaultworkingdirectory)\devops-pipeline\templates\assets\api.bar" example-repo-local'
+      command: 'jfrog rt upload "$(system.defaultworkingdirectory)\templates\assets\$(project-name).bar" $(jfrog-repo)'
 
