@@ -2,6 +2,7 @@ steps:
 - checkout: self
 
 - task: PowerShell@2
+  displayName: 'Waiting IS started'
   inputs:
     targetType: 'inline'
     script: 'Start-Sleep -Seconds 90'
@@ -16,15 +17,22 @@ steps:
       echo OpenAPI downloaded
 
 - task: PythonScript@0
+  displayName: 'Converting .json to .yml'
   inputs:
     scriptSource: 'inline'
     script: |
       import yaml
       import json 
        
-      file = open('$(project-name)','w')
+      file = open('$(project-name).yaml','w')
       file.write(yaml.dump(json.load(open("$(project-name).json"))))
       file.close()
+
+- task: CmdLine@2
+  displayName: 'Moving OpenAPI'
+  inputs:
+    script: |
+      move $(project-name).yaml $(system.defaultworkingdirectory)\templates\assets
 # Pubishing API
 
 - task: CmdLine@2
