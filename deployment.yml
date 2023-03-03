@@ -24,29 +24,39 @@ stages:
           steps:
           - template: templates/publishing-api.yml
 
-- stage: TestingApplication
-  displayName: Testing Application in APIC
-  dependsOn: PublishApplication
-  jobs: 
+- stage: 'Testing'
+  jobs:
   - job: GetCredentials
     steps:
     - bash: |
         echo "##vso[task.setvariable variable=xAPIKey;isOutput=true]$(xapikey)"
         echo "##vso[task.setvariable variable=xAPISecret;isOutput=true]$(xapisecret)"
       name: credentials
-  - deployment: ResquestTestingAPI
-    dependsOn: GetCredentials
-    workspace:
-      clean: all
-    displayName: APIC Testing
-    environment: $(environmentValue)
+  - job: ResquestTestingAPI
+    pool: server
     timeoutInMinutes: 1
     cancelTimeoutInMinutes: 1
+    dependsOn: GetCredentials
     variables:
       xapikey: $[dependencies.GetCredentials.outputs['credentials.xAPIKey']]
       xapisecret: $[dependencies.GetCredentials.outputs['credentials.xAPISecret']]
-    strategy:
-      runOnce:
-        deploy:
-          steps:
-          - template: templates/testing-api.yml
+    steps:
+    - task: InvokeRESTAPI@1
+      inputs:
+        connectionType: 'connectedServiceName'
+        serviceConnection: 'apiTesting'
+        method: 'POST'
+        headers: |
+          {
+          "Content-Type":"application/json",
+          "X-API-Key": "$(xapikey)",
+          "X-API-Secret": "$(xapisecret)"
+          }
+        body: |
+          {
+              "options":{
+                "allAssertions":true,
+                "JUnitFormat":false
+              }
+          }
+        waitForCompletion: 'false'
