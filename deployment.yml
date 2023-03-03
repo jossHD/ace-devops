@@ -8,6 +8,7 @@ pool:
 variables: 
   - template: variables.yml
 
+stages:
 - stage: PublishApplication
   displayName: Publish Application in APIC
   dependsOn: DeployApplication
