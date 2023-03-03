@@ -4,9 +4,9 @@ steps:
   inputs:
     connectionType: 'connectedServiceName'
     serviceConnection: 'apiTesting'
-    method: 'POST'
+    method: 'GET'
     headers: |
-     {
+      {
       "Content-Type":"application/json",
       "X-API-Key": "$(xapikey)",
       "X-API-Secret": "$(xapisecret)"
