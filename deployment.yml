@@ -11,7 +11,6 @@ variables:
 stages:
 - stage: PublishApplication
   displayName: Publish Application in APIC
-  dependsOn: DeployApplication
   jobs: 
   - deployment: PublishAPIC
     workspace:
