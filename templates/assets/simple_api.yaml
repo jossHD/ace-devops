@@ -1,0 +1,73 @@
+swagger: '2.0'
+info:
+  title: simple_api
+  version: 1.0.0
+  description: simple_api
+  x-ibm-name: simple_api
+paths:
+  /holamundo:
+    get:
+      operationId: getHolamundo
+      responses:
+        '200':
+          description: The operation was successful.
+          schema:
+            type: string
+      produces:
+        - application/json
+      description: Retrieve holamundo
+basePath: /simple_api/v1/
+definitions:
+  data:
+    type: object
+schemes:
+  - https
+x-ibm-configuration:
+  cors:
+    enabled: true
+  properties:
+    target-url:
+      value: http://ace-bar-gitops-http-my-cp4i.mycluster-dal12-jlhd-ccc03eca20d26e6ac64511f874a64b9b-0000.us-south.containers.appdomain.cloud
+      description: The URL of the target service
+      encoded: false
+  phase: realized
+  enforced: true
+  gateway: datapower-api-gateway
+  assembly:
+    execute:
+      - invoke:
+          title: invoke
+          version: 2.0.0
+          verb: keep
+          target-url: $(target-url)$(request.path)
+          follow-redirects: false
+          timeout: 60
+          parameter-control:
+            type: allowlist
+            values: []
+          header-control:
+            type: blocklist
+            values: []
+          inject-proxy-headers: true
+          persistent-connection: true
+    finally: []
+  type: rest
+  testable: true
+  activity-log:
+    enabled: true
+    success-content: activity
+    error-content: payload
+  servers:
+    - url: https://api-manage-691e5904-gateway-my-cp4i.mycluster-dal12-jlhd-ccc03eca20d26e6ac64511f874a64b9b-0000.us-south.containers.appdomain.cloud/org-provide/sandbox/simple_api/v1
+      description: ''
+      type:
+        - production
+        - development
+  oauth-servers: []
+securityDefinitions:
+  clientID:
+    type: apiKey
+    in: header
+    name: X-IBM-Client-Id
+security:
+  - clientID: []

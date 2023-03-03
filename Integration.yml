@@ -72,17 +72,3 @@ stages:
         deploy:
           steps:
           - template: ibm-gitops-deploy.yml@templates
-- stage: PublishApplication
-  displayName: Publish Application in APIC
-  dependsOn: DeployApplication
-  jobs: 
-  - deployment: PublishAPIC
-    workspace:
-      clean: all
-    displayName: Publishing in APIC
-    environment: $(environmentValue)
-    strategy:
-      runOnce:
-        deploy:
-          steps:
-          - template: templates/publish-api.yml
