@@ -27,7 +27,8 @@ x-ibm-configuration:
     enabled: true
   properties:
     target-url:
-      value: {{ values.x-ibm-configuration.value }}
+      value: >-
+        http://$(is-name)-http-$(namespaceSecret).$(cluster-endpoint)
       description: The URL of the target service
       encoded: false
   phase: realized
