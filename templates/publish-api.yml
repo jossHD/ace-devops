@@ -1,14 +1,6 @@
 steps:
 - checkout: self
 
-- task: PowerShell@2
-  displayName: 'Waiting IS started'
-  inputs:
-    targetType: 'inline'
-    script: 'Start-Sleep -Seconds 60'
-
-# Pubishing API
-
 - task: CmdLine@2
   displayName: 'Login APIC'
   inputs:
@@ -29,8 +21,3 @@ steps:
   displayName: 'Pubishing product'
   inputs:
     script: 'apic products:publish templates\assets\producto-lab.yaml  --catalog  qa -s $(server-apic) -o $(org-prov) --format json'
-
-- task: CmdLine@2
-  displayName: 'Creating new app'
-  inputs:
-    script: 'apic apps:create -s $(server-apic) --catalog qa --consumer-org $(org-cons) -o $(org-prov) templates\assets\app-lab.yaml --format json'

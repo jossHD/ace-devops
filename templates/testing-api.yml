@@ -1,13 +1,21 @@
 steps:
+
 - task: InvokeRESTAPI@1
   inputs:
     connectionType: 'connectedServiceName'
-    serviceConnection: 'apiTesting'
-    method: 'GET'
+    serviceConnection: 'api Testing'
+    method: 'POST'
     headers: |
       {
       "Content-Type":"application/json",
       "X-API-Key": "$(xapikey)",
       "X-API-Secret": "$(xapisecret)"
       }
+    body: |
+      {
+        "options":{
+          "allAssertions":true,
+          "JUnitFormat":false
+        }
+       }
     waitForCompletion: 'false'
