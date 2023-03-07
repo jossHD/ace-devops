@@ -107,5 +107,8 @@ stages:
     variables:
       xapikey: $[dependencies.GetCredentials.outputs['credentials.xAPIKey']]
       xapisecret: $[dependencies.GetCredentials.outputs['credentials.xAPISecret']]
-    steps:
-      - template: templates/testing-api.yml
+      strategy:
+      runOnce:
+        deploy:
+          steps:
+            - template: templates/testing-api.yml
