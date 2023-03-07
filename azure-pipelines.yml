@@ -98,6 +98,7 @@ stages:
         echo "##vso[task.setvariable variable=xAPISecret;isOutput=true]$(xapisecret)"
       name: credentials
   - deployment:  ResquestTestingAPI
+    environment: $(environmentValue)
     pool: server
     timeoutInMinutes: 1
     cancelTimeoutInMinutes: 1
