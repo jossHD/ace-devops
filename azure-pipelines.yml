@@ -107,7 +107,7 @@ stages:
     variables:
       xapikey: $[dependencies.GetCredentials.outputs['credentials.xAPIKey']]
       xapisecret: $[dependencies.GetCredentials.outputs['credentials.xAPISecret']]
-      strategy:
+    strategy:
       runOnce:
         deploy:
           steps:
