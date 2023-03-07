@@ -110,11 +110,18 @@ stages:
       inputs:
         connectionType: 'connectedServiceName'
         serviceConnection: 'api Testing'
-        method: 'GET'
+        method: 'POST'
         headers: |
           {
           "Content-Type":"application/json",
           "X-API-Key": "$(xapikey)",
           "X-API-Secret": "$(xapisecret)"
           }
+        body: |
+          {
+            "options":{
+              "allAssertions":true,
+              "JUnitFormat":false
+            }
+           }
         waitForCompletion: 'false'
