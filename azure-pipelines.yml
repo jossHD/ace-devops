@@ -89,8 +89,6 @@ stages:
           - template: templates/publish-api.yml
 
 - stage: 'TestApplication'
-  pool: 
-    name: Azure Pipeline
   displayName: Testing Application in APIC
   jobs:
   - job: GetCredentials
