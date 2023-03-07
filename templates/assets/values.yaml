@@ -1,0 +1,3 @@
+x-ibm-configuration:
+      value:  >-
+        http://$(is-name)-http-$(namespaceSecret).$(cluster-endpoint)

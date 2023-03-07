@@ -15,7 +15,7 @@ trigger:
 - main
 
 pool: 
-  name: PoC IBK
+  name: Windows Agent
 
 parameters:
 - name: appOptions
@@ -72,3 +72,40 @@ stages:
         deploy:
           steps:
           - template: ibm-gitops-deploy.yml@templates
+
+          
+- stage: PublishApplication
+  displayName: Publish Application in APIC
+  jobs:
+  - deployment: PublishAPIC
+    workspace:
+      clean: all
+    displayName: Publishing in APIC
+    environment: $(environmentValue)
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - template: templates/publish-api.yml
+
+- stage: 'TestApplication'
+  pool: 
+    name: Azure Pipeline
+  displayName: Testing Application in APIC
+  jobs:
+  - job: GetCredentials
+    steps:
+    - bash: |
+        echo "##vso[task.setvariable variable=xAPIKey;isOutput=true]$(xapikey)"
+        echo "##vso[task.setvariable variable=xAPISecret;isOutput=true]$(xapisecret)"
+      name: credentials
+  - deployment: ResquestTestingAPI
+    pool: server
+    timeoutInMinutes: 1
+    cancelTimeoutInMinutes: 1
+    dependsOn: GetCredentials
+    variables:
+      xapikey: $[dependencies.GetCredentials.outputs['credentials.xAPIKey']]
+      xapisecret: $[dependencies.GetCredentials.outputs['credentials.xAPISecret']]
+    steps:
+      - template: templates/testing-api.yml

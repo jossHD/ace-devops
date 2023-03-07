@@ -1,5 +1,4 @@
 steps:
-
 - task: InvokeRESTAPI@1
   inputs:
     connectionType: 'connectedServiceName'
@@ -10,12 +9,5 @@ steps:
       "Content-Type":"application/json",
       "X-API-Key": "$(xapikey)",
       "X-API-Secret": "$(xapisecret)"
-      }
-    body: |
-      {
-        "options":{
-          "allAssertions":true,
-          "JUnitFormat":false
-          }
       }
     waitForCompletion: 'false'
