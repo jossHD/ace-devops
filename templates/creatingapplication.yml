@@ -35,4 +35,11 @@ steps:
     inputs:
       artifactoryService: 'jfrog-service'
       command: 'jfrog rt upload "$(system.defaultworkingdirectory)\templates\assets\$(project-name).bar" $(jfrog-repo)'
+  
+  - task: CmdLine@2
+    displayName: "Creating IS"
+    inputs:
+      script: |
+        oc apply -f integration-server/templates/integration-server.yaml
+
 
