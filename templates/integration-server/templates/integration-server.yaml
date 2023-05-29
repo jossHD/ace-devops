@@ -32,4 +32,3 @@ spec:
     {{ .Values.barURL }}
   configurations:
     - {{ .Values.configuration.credentials }}
-    - {{ .Values.configuration.policy }}
