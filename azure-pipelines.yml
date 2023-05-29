@@ -4,9 +4,20 @@ trigger:
 pool: 
   name: Windows Agent
 
+parameters:
+- name: appOptions
+  displayName: Application options
+  type: object
+  default:
+    - name: 'api-apiname'
+      secret: []
+    - name: 'lib-libname'
+      secret: []
+
 
 variables: 
   - template: variables.yml
+
 
 stages:
 - stage: CreateApplication
