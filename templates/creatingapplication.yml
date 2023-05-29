@@ -40,6 +40,6 @@ steps:
     displayName: "Creating IS"
     inputs:
       script: |
-        oc apply -f integration-server/templates/integration-server.yaml
+        oc apply -f $(system.defaultworkingdirectory)\templates\integration-server\templates\integration-server.yaml
 
 
