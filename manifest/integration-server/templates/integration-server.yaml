@@ -1,8 +1,8 @@
 apiVersion: appconnect.ibm.com/v1beta1
 kind: IntegrationServer
 metadata:
-  name: {{ .Values.metadata.name }}
-  namespace: {{ .Values.metadata.namespace }}
+  name: ace-devops
+  namespace: my-cp4i
 spec:
   adminServerSecure: true
   createDashboardUsers: true
@@ -10,8 +10,8 @@ spec:
   enableMetrics: true
   license:
     accept: true
-    license: {{ .Values.spec.license }}
-    use: {{ .Values.spec.use }}
+    license: L-MJTK-WUU8HE
+    use: CloudPakForIntegrationNonProduction
   pod:
     containers:
       runtime:
@@ -27,9 +27,8 @@ spec:
     timeout: 120s
   service:
     endpointType: http
-  version: {{ .Values.version }}
+  version: '12.0.8.0-r1'
   barURL: >-
-    {{ .Values.barURL }}
+    https://josselynhd.jfrog.io/artifactory/example-repo-local/api.bar
   configurations:
-    - {{ .Values.configuration.credentials }}
-    - {{ .Values.configuration.policy }}
+    - jfrog-credentials
